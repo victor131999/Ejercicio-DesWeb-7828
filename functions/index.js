@@ -2,7 +2,7 @@ const functions = require('firebase-functions');
 const express = require('express');
 const app = express();
 
-//credenciales //
+//credenciales agregadas //
 var firebaseConfig = {
   apiKey: "AIzaSyCpvO7wTr4VYm4U3U-cm3-bOxlTfIqVk3g",
   authDomain: "proyecto-1-nrc-7828.firebaseapp.com",
