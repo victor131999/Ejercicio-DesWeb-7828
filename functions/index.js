@@ -15,6 +15,9 @@ const database = admin.database();
 ///========================= Variables globales ===================///
 const dbPeople = "persons"; //Referencia al nodo en donde se van a guardar las personas
 
+const dbskills="skills";
+
+
 ///========================= Métodos internos ===================///
 function createPerson(person){
   database.ref(dbPeople).push(person);  
@@ -35,6 +38,28 @@ function deletePerson(id){
 function listPersons(){
   return database.ref(dbPeople).once('value');
 }
+
+//creacion de skills//
+function createSkills(id,skill){
+  database.ref(dbPeople).child(id).child(dbskills).push(skill);
+}
+
+function retrieveSkills(id, ids){
+  return database.ref(dbPeople).child(id).child(dbskills).child(ids).once('value');
+}
+
+function updateSkills(id, ids, skill){
+  database.ref(dbPeople).child(id).child(dbskills).child(ids).set(skill);
+}
+
+function deleteSkills(id, ids){
+  database.ref(dbPeople).child(id).child(dbskills).child(ids).remove();
+}
+
+function listSkills(id){
+  return database.ref(dbPeople).child(id).child(dbskills).once('value');
+}
+
 
 ///========================= Funciones URLs ===================///
 app.post('/api/persons', function (req, res) {
@@ -90,5 +115,54 @@ app.get('/api/person', function(req, res){
 app.get('/api/', function (req, res) {
   res.send('Bienvenid@s a Cloud Functions de Desarrollo Web Avanzado NRC 7828')
 })
+
+//APP DE LAS SKILLS//
+app.post('/api/persons/:id/skills', function (req, res) {
+  var skill = {
+    name : req.body['name'],
+    hours : req.body['hours'],
+    date : req.body['date'],
+    endorsed : req.body['endorsed']
+   };
+  createSkills(req.params.id,skill);
+  return res.status(201).json({ message: "Success skill was added to person." });
+});
+
+app.get('/api/persons/:id/skills/:ids', function(req, res){
+  let varIds = req.params.ids;
+  let varId = req.params.id;
+  retrieveSkills(varId, varIds).then(result => {
+      return res.status(200).json(result); 
+    }
+  ).catch(err => console.log(err));
+});
+
+app.put('/api/persons/:id/skills/:ids', function (req, res) {
+  let varIds = req.params.ids;
+  let varId = req.params.id;
+  var skill = {
+    name : req.body['name'],
+    hours : req.body['hours'],
+    date : req.body['date'],
+    endorsed : req.body['endorsed']  };
+  updateSkills(varId, varIds, skill);
+  return res.status(200).json({ message: "Success skill was updated." });
+});
+
+
+app.delete('/api/persons/:id/skills/:ids',function(req, res){
+  let varIds = req.params.ids;
+  let varId = req.params.id;
+  deleteSkills(varId, varIds);
+  return res.status(200).json({ message: "Success skills was deleted." });
+});
+
+app.get('/api/persons/:id/skills', function(req, res){
+  listSkills(req.params.id).then(result => {
+      return res.status(200).json(result); 
+    }
+  ).catch(err => console.log(err));
+});
+
 
 exports.app = functions.https.onRequest(app);
